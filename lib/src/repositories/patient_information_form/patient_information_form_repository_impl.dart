@@ -36,7 +36,7 @@ class PatientInformationFormRepositoryImpl
       case Right():
         // Popular o Patient Information Form
         formData['status'] = PatientInformationFormStatus.checkIn.id;
-        formData['patient'] = await _getPatientById(formData['id']);
+        formData['patient'] = await _getPatientById(formData['patient_id']);
         return Right(PatientInformationFormModel.fromJson(formData));
     }
   }
@@ -56,7 +56,7 @@ class PatientInformationFormRepositoryImpl
   }
 
   Future<Map<String, dynamic>> _getPatientById(String id) async {
-    final Response(:data) = await restClient.auth.get('/patient/$id');
+    final Response(:data) = await restClient.auth.get('/patients/$id');
 
     return data;
   }

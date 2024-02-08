@@ -12,8 +12,7 @@ class AttendantDeskAssignmentRepositoryImpl
   final RestClient restClient;
 
   @override
-  Future<Either<RepositoryException, Unit>> startService(
-      int ticketWindow) async {
+  Future<Either<RepositoryException, Unit>> startService(int deskNumber) async {
     final result = await _clearTicketWindowByUser();
 
     switch (result) {
@@ -22,7 +21,7 @@ class AttendantDeskAssignmentRepositoryImpl
       case Right():
         await restClient.auth.post('/attendantDeskAssignment', data: {
           'userid': '#userAuthRef',
-          'ticket_window': ticketWindow,
+          'desk_number': deskNumber,
           'date_created': DateTime.now().toIso8601String(),
           'status': 'Avaliable'
         });
@@ -43,7 +42,7 @@ class AttendantDeskAssignmentRepositoryImpl
     }
   }
 
-  Future<({String id, int ticketWindow})?> _getTicketWindowByUser() async {
+  Future<({String id, int deskNumber})?> _getTicketWindowByUser() async {
     final Response(:List data) =
         await restClient.auth.get('/attendantDeskAssignment', queryParameters: {
       // Em um backend real seria mandado para um serviço que de fato pegaria o userId
@@ -54,11 +53,11 @@ class AttendantDeskAssignmentRepositoryImpl
     if (data
         case List(
           isNotEmpty: true,
-          first: {'id': String id, 'ticket_window': int ticketWindow}
+          first: {'id': String id, 'desk_number': int deskNumber}
         )) {
       return (
         id: id,
-        ticketWindow: ticketWindow,
+        deskNumber: deskNumber,
       );
     }
 
@@ -73,7 +72,7 @@ class AttendantDeskAssignmentRepositoryImpl
         'user_id': #userAuthRef,
       });
 
-      return Right(data['ticket_window']);
+      return Right(data['desk_number']);
     } on DioException catch (e, s) {
       log('Erro ao recuperar guichê', error: e, stackTrace: s);
       return Left(RepositoryException());

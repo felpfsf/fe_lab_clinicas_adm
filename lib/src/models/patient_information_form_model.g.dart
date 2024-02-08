@@ -12,7 +12,7 @@ PatientInformationFormModel _$PatientInformationFormModelFromJson(
       id: json['id'] as String,
       patient: PatientModel.fromJson(json['patient'] as Map<String, dynamic>),
       healthInsuranceCard: json['health_insurance_card'] as String,
-      medialOrder: (json['medial_order'] as List<dynamic>)
+      medicalOrder: (json['medical_order'] as List<dynamic>)
           .map((e) => e as String)
           .toList(),
       password: json['password'] as String,
@@ -27,7 +27,7 @@ Map<String, dynamic> _$PatientInformationFormModelToJson(
       'id': instance.id,
       'patient': instance.patient,
       'health_insurance_card': instance.healthInsuranceCard,
-      'medial_order': instance.medialOrder,
+      'medical_order': instance.medicalOrder,
       'password': instance.password,
       'date_created': instance.dateCreated.toIso8601String(),
       'status': instance.status,

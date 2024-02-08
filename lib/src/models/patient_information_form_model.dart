@@ -5,7 +5,7 @@ part 'patient_information_form_model.g.dart';
 
 @JsonEnum(valueField: 'id')
 enum PatientInformationFormStatus {
-  wating('Wating'),
+  wating('Waiting'),
   checkIn('Checked In'),
   beingAttended('Being Attended');
 
@@ -19,7 +19,7 @@ class PatientInformationFormModel {
     required this.id,
     required this.patient,
     required this.healthInsuranceCard,
-    required this.medialOrder,
+    required this.medicalOrder,
     required this.password,
     required this.dateCreated,
     required this.status,
@@ -29,8 +29,8 @@ class PatientInformationFormModel {
   final PatientModel patient;
   @JsonKey(name: 'health_insurance_card')
   final String healthInsuranceCard;
-  @JsonKey(name: 'medial_order')
-  final List<String> medialOrder;
+  @JsonKey(name: 'medical_order')
+  final List<String> medicalOrder;
   final String password;
   @JsonKey(name: 'date_created')
   final DateTime dateCreated;

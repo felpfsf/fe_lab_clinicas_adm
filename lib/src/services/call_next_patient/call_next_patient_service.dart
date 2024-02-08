@@ -20,7 +20,6 @@ class CallNextPatientService {
   Future<Either<RepositoryException, PatientInformationFormModel?>>
       execute() async {
     final result = await patientInformationFormRepository.callNextToCheckIn();
-
     switch (result) {
       case Left(value: final exception):
         return Left(exception);

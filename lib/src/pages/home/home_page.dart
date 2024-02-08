@@ -3,6 +3,7 @@ import 'package:fe_lab_clinicas_core/fe_lab_clinicas_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_getit/flutter_getit.dart';
+import 'package:signals_flutter/signals_flutter.dart';
 import 'package:validatorless/validatorless.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,17 +16,22 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with MessageViewMixin {
   final controller = Injector.get<HomeController>();
   final formKey = GlobalKey<FormState>();
-  final ticketWindowEC = TextEditingController();
+  final deskNumberEC = TextEditingController();
 
   @override
   void initState() {
     messageListener(controller);
+    effect(() {
+      if (controller.informationForm != null) {
+        print('Paciente carregado ${controller.informationForm}');
+      }
+    });
     super.initState();
   }
 
   @override
   void dispose() {
-    ticketWindowEC.dispose();
+    deskNumberEC.dispose();
     super.dispose();
   }
 
@@ -63,7 +69,7 @@ class _HomePageState extends State<HomePage> with MessageViewMixin {
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
-                      controller: ticketWindowEC,
+                      controller: deskNumberEC,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
                       ],
@@ -86,7 +92,7 @@ class _HomePageState extends State<HomePage> with MessageViewMixin {
 
                           if (valid) {
                             controller
-                                .startService(int.parse(ticketWindowEC.text));
+                                .startService(int.parse(deskNumberEC.text));
                           }
                         },
                         child: const Text('CHAMAR PRÓXIMO PACIENTE'),
