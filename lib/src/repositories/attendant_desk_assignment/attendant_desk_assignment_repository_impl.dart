@@ -22,7 +22,7 @@ class AttendantDeskAssignmentRepositoryImpl
       case Right():
         await restClient.auth.post('/attendantDeskAssignment', data: {
           'userid': '#userAuthRef',
-          'ticketWindow': ticketWindow,
+          'ticket_window': ticketWindow,
           'date_created': DateTime.now().toIso8601String(),
           'status': 'Avaliable'
         });
@@ -63,5 +63,20 @@ class AttendantDeskAssignmentRepositoryImpl
     }
 
     return null;
+  }
+
+  @override
+  Future<Either<RepositoryException, int>> getDeskAssignment() async {
+    try {
+      final Response(data: List(first: data)) = await restClient.auth
+          .get('/attendantDeskAssignment', queryParameters: {
+        'user_id': #userAuthRef,
+      });
+
+      return Right(data['ticket_window']);
+    } on DioException catch (e, s) {
+      log('Erro ao recuperar guichê', error: e, stackTrace: s);
+      return Left(RepositoryException());
+    }
   }
 }
