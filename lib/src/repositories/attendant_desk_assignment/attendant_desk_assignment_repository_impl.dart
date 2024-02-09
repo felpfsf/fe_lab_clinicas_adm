@@ -20,7 +20,7 @@ class AttendantDeskAssignmentRepositoryImpl
         return Left(exception);
       case Right():
         await restClient.auth.post('/attendantDeskAssignment', data: {
-          'userid': '#userAuthRef',
+          'user_id': '#userAuthRef',
           'desk_number': deskNumber,
           'date_created': DateTime.now().toIso8601String(),
           'status': 'Avaliable'
@@ -69,7 +69,7 @@ class AttendantDeskAssignmentRepositoryImpl
     try {
       final Response(data: List(first: data)) = await restClient.auth
           .get('/attendantDeskAssignment', queryParameters: {
-        'user_id': #userAuthRef,
+        'user_id': '#userAuthRef',
       });
 
       return Right(data['desk_number']);

@@ -17,8 +17,8 @@ PatientInformationFormModel _$PatientInformationFormModelFromJson(
           .toList(),
       password: json['password'] as String,
       dateCreated: DateTime.parse(json['date_created'] as String),
-      status: PatientInformationFormModel.fromJson(
-          json['status'] as Map<String, dynamic>),
+      status:
+          $enumDecode(_$PatientInformationFormStatusEnumMap, json['status']),
     );
 
 Map<String, dynamic> _$PatientInformationFormModelToJson(
@@ -30,5 +30,11 @@ Map<String, dynamic> _$PatientInformationFormModelToJson(
       'medical_order': instance.medicalOrder,
       'password': instance.password,
       'date_created': instance.dateCreated.toIso8601String(),
-      'status': instance.status,
+      'status': _$PatientInformationFormStatusEnumMap[instance.status]!,
     };
+
+const _$PatientInformationFormStatusEnumMap = {
+  PatientInformationFormStatus.waiting: 'Waiting',
+  PatientInformationFormStatus.checkIn: 'Checked In',
+  PatientInformationFormStatus.beingAttended: 'Being Attended',
+};

@@ -5,7 +5,7 @@ part 'patient_information_form_model.g.dart';
 
 @JsonEnum(valueField: 'id')
 enum PatientInformationFormStatus {
-  wating('Waiting'),
+  waiting('Waiting'),
   checkIn('Checked In'),
   beingAttended('Being Attended');
 
@@ -34,7 +34,7 @@ class PatientInformationFormModel {
   final String password;
   @JsonKey(name: 'date_created')
   final DateTime dateCreated;
-  final PatientInformationFormModel status;
+  final PatientInformationFormStatus status;
 
   factory PatientInformationFormModel.fromJson(Map<String, dynamic> json) =>
       _$PatientInformationFormModelFromJson(json);

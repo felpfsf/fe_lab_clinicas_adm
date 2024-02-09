@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:fe_lab_clinicas_adm/src/models/patient_information_form_model.dart';
 import 'package:fe_lab_clinicas_core/fe_lab_clinicas_core.dart';
+import 'package:flutter/cupertino.dart';
 
 import './patient_information_form_repository.dart';
 
@@ -17,7 +18,7 @@ class PatientInformationFormRepositoryImpl
       callNextToCheckIn() async {
     final Response(:List data) =
         await restClient.auth.get('/patientInformationForm', queryParameters: {
-      'status': PatientInformationFormStatus.wating.id,
+      'status': PatientInformationFormStatus.waiting.id,
       'page': 1,
       'limit': 1,
     });
@@ -37,6 +38,7 @@ class PatientInformationFormRepositoryImpl
         // Popular o Patient Information Form
         formData['status'] = PatientInformationFormStatus.checkIn.id;
         formData['patient'] = await _getPatientById(formData['patient_id']);
+        debugPrint("🚀 ~ callNextToCheckIn ~ $formData");
         return Right(PatientInformationFormModel.fromJson(formData));
     }
   }
