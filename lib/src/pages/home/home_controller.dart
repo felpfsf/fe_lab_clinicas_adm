@@ -27,7 +27,7 @@ class HomeController with MessageStateMixin {
       case Left():
         asyncState.AsyncState.hide();
         showError('Erro ao iniciar guichê, contate o suporte');
-      case Right(value: _):
+      case Right():
         final resutlNextPatient = await _callNextPatientService.execute();
         switch (resutlNextPatient) {
           case Left():

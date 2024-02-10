@@ -1,12 +1,34 @@
+import 'package:fe_lab_clinicas_adm/src/models/patient_information_form_model.dart';
+import 'package:fe_lab_clinicas_adm/src/pages/pre_checkin/pre_checkin_controller.dart';
 import 'package:fe_lab_clinicas_adm/src/shared/data_item.dart';
 import 'package:fe_lab_clinicas_core/fe_lab_clinicas_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_getit/flutter_getit.dart';
+import 'package:signals_flutter/signals_flutter.dart';
 
-class PreCheckinPage extends StatelessWidget {
+class PreCheckinPage extends StatefulWidget {
   const PreCheckinPage({super.key});
 
   @override
+  State<PreCheckinPage> createState() => _PreCheckinPageState();
+}
+
+class _PreCheckinPageState extends State<PreCheckinPage> with MessageViewMixin {
+  final controller = Injector.get<PreCheckinController>();
+
+  @override
+  void initState() {
+    messageListener(controller);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Com o signals é possível ficar escutando a váriavel através do método watch
+    // Dessa forma qualquer alteração da informção ele vai executar o build automaticamente.
+    final PatientInformationFormModel(:password, :patient) =
+        controller.informationForm.watch(context)!;
+
     final sizeOf = MediaQuery.sizeOf(context);
 
     return Scaffold(
@@ -32,7 +54,7 @@ class PreCheckinPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   const Text(
                     'A senha chamada foi',
-                    style: LabClinicasTheme.titleSmallBoldStyle,
+                    style: LabClinicasTheme.titleSmallStyle,
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -48,42 +70,67 @@ class PreCheckinPage extends StatelessWidget {
                       color: LabClinicasTheme.primaryLabel,
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: const Text(
-                      'SENHA',
+                    child: Text(
+                      password,
                       style: LabClinicasTheme.titleSmallBoldStyle,
                       textAlign: TextAlign.center,
                     ),
                   ),
                   const SizedBox(height: 48),
-                  const SizedBox(
+                  SizedBox(
                     width: double.infinity,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        DataItem(label: 'Nome do Paciente', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        DataItem(label: 'Email', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        DataItem(label: 'Telefone de contato', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        DataItem(label: 'CPF', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        DataItem(label: 'CEP', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        DataItem(label: 'Endereço', value: 'Fulano'),
-                        SizedBox(height: 24),
-                        Visibility(
-                          visible: true,
-                          child:
-                              DataItem(label: 'Responsável', value: 'Fulano'),
+                        DataItem(
+                          label: 'Nome do Paciente',
+                          value: patient.name,
                         ),
-                        SizedBox(height: 24),
-                        Visibility(
-                          visible: true,
-                          child: DataItem(
-                              label: 'Documento de identificação',
-                              value: 'Fulano'),
+                        const SizedBox(height: 24),
+                        DataItem(
+                          label: 'Email',
+                          value: patient.email,
                         ),
+                        const SizedBox(height: 24),
+                        DataItem(
+                          label: 'Telefone de contato',
+                          value: patient.phoneNumber,
+                        ),
+                        const SizedBox(height: 24),
+                        DataItem(
+                          label: 'CPF',
+                          value: patient.document,
+                        ),
+                        const SizedBox(height: 24),
+                        DataItem(
+                          label: 'CEP',
+                          value: patient.address.cep,
+                        ),
+                        const SizedBox(height: 24),
+                        DataItem(
+                          label: 'Endereço',
+                          value:
+                              '${patient.address.streetAddress}, ${patient.address.number} '
+                              '${patient.address.addressComplement}, ${patient.address.district}, '
+                              '${patient.address.city} - ${patient.address.state}',
+                        ),
+                        const SizedBox(height: 24),
+                        Visibility(
+                          visible: patient.guardian.isNotEmpty,
+                          child: Column(
+                            children: [
+                              DataItem(
+                                label: 'Responsável',
+                                value: patient.guardian,
+                              ),
+                              const SizedBox(height: 24),
+                              DataItem(
+                                label: 'Documento de identificação',
+                                value: patient.guardianIdentificationNumber,
+                              ),
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -95,7 +142,9 @@ class PreCheckinPage extends StatelessWidget {
                           style: OutlinedButton.styleFrom(
                             fixedSize: const Size.fromHeight(48),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            controller.next();
+                          },
                           child: const Text('CHAMAR OUTRA SENHA'),
                         ),
                       ),
@@ -105,7 +154,12 @@ class PreCheckinPage extends StatelessWidget {
                           style: ElevatedButton.styleFrom(
                             fixedSize: const Size.fromHeight(48),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushReplacementNamed(
+                              '/checkin',
+                              arguments: controller.informationForm,
+                            );
+                          },
                           child: const Text('ATENDER '),
                         ),
                       ),
