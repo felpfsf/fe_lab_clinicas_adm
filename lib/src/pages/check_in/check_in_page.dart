@@ -23,7 +23,7 @@ class _CheckInPageState extends State<CheckInPage> with MessageViewMixin {
     messageListener(controller);
 
     effect(() {
-      if (controller.endProcess()) {
+      if (controller.endProcess.value) {
         Navigator.of(context).pushReplacementNamed('/end-checkin');
       }
     });
@@ -181,7 +181,7 @@ class _CheckInPageState extends State<CheckInPage> with MessageViewMixin {
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        controller.endProcess();
+                        controller.endCheckin();
                       },
                       child: const Text('FINALIZAR ATENDIMENTO'),
                     ),

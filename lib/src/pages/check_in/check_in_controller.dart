@@ -22,6 +22,7 @@ class CheckInController with MessageStateMixin {
         case Left():
           showError('Erro ao atualizar status');
         case Right():
+          print('end Checkin');
           endProcess.value = true;
       }
     } else {
