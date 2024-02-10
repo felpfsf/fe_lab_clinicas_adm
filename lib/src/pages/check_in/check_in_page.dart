@@ -1,5 +1,6 @@
 import 'package:fe_lab_clinicas_adm/src/models/patient_information_form_model.dart';
-import 'package:fe_lab_clinicas_adm/src/pages/pre_checkin/pre_checkin_controller.dart';
+import 'package:fe_lab_clinicas_adm/src/pages/check_in/check_in_controller.dart';
+import 'package:fe_lab_clinicas_adm/src/pages/check_in/widgets/checkin_image_link.dart';
 import 'package:fe_lab_clinicas_adm/src/shared/data_item.dart';
 import 'package:fe_lab_clinicas_adm/src/shared/patient_password_panel.dart';
 import 'package:fe_lab_clinicas_core/fe_lab_clinicas_core.dart';
@@ -7,29 +8,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_getit/flutter_getit.dart';
 import 'package:signals_flutter/signals_flutter.dart';
 
-class PreCheckinPage extends StatefulWidget {
-  const PreCheckinPage({super.key});
+class CheckInPage extends StatefulWidget {
+  const CheckInPage({super.key});
 
   @override
-  State<PreCheckinPage> createState() => _PreCheckinPageState();
+  State<CheckInPage> createState() => _CheckInPageState();
 }
 
-class _PreCheckinPageState extends State<PreCheckinPage> with MessageViewMixin {
-  final controller = Injector.get<PreCheckinController>();
+class _CheckInPageState extends State<CheckInPage> with MessageViewMixin {
+  final controller = Injector.get<CheckInController>();
 
   @override
   void initState() {
     messageListener(controller);
+
+    effect(() {
+      if (controller.endProcess()) {
+        Navigator.of(context).pushReplacementNamed('/end-checkin');
+      }
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Com o signals é possível ficar escutando a váriavel através do método watch
-    // Dessa forma qualquer alteração da informção ele vai executar o build automaticamente.
-    final PatientInformationFormModel(:password, :patient) =
-        controller.informationForm.watch(context)!;
-
+    final PatientInformationFormModel(
+      :password,
+      :patient,
+      :healthInsuranceCard,
+      :medicalOrder
+    ) = controller.informationForm.watch(context)!;
     final sizeOf = MediaQuery.sizeOf(context);
 
     return Scaffold(
@@ -37,13 +45,13 @@ class _PreCheckinPageState extends State<PreCheckinPage> with MessageViewMixin {
       body: SingleChildScrollView(
         child: Container(
           constraints: BoxConstraints(minHeight: sizeOf.height),
-          decoration: const BoxDecoration(
-            color: LabClinicasTheme.secondaryBackground,
-          ),
-          child: Center(
+          color: LabClinicasTheme.secondaryBackground,
+          child: Align(
+            alignment: Alignment.topCenter,
             child: Container(
-              padding: const EdgeInsets.all(40),
-              constraints: BoxConstraints(maxWidth: sizeOf.width * .4),
+              margin: const EdgeInsets.only(top: 56),
+              padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 40),
+              width: sizeOf.width * .4,
               decoration: BoxDecoration(
                 color: LabClinicasTheme.primaryElement,
                 border: Border.all(color: LabClinicasTheme.primaryLabel),
@@ -60,6 +68,21 @@ class _PreCheckinPageState extends State<PreCheckinPage> with MessageViewMixin {
                   const SizedBox(height: 16),
                   PatientPasswordPanel(password: password),
                   const SizedBox(height: 48),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: LabClinicasTheme.secondaryBackground,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      'Cadastro',
+                      style: LabClinicasTheme.titleSmallStyle
+                          .copyWith(color: LabClinicasTheme.primaryLabel),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Form
                   SizedBox(
                     width: double.infinity,
                     child: Column(
@@ -119,36 +142,50 @@ class _PreCheckinPageState extends State<PreCheckinPage> with MessageViewMixin {
                     ),
                   ),
                   const SizedBox(height: 48),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: LabClinicasTheme.secondaryBackground,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      'Validar Imagens Exames',
+                      style: LabClinicasTheme.titleSmallStyle
+                          .copyWith(color: LabClinicasTheme.primaryLabel),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Exames
                   Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            fixedSize: const Size.fromHeight(48),
-                          ),
-                          onPressed: () {
-                            controller.next();
-                          },
-                          child: const Text('CHAMAR OUTRA SENHA'),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            fixedSize: const Size.fromHeight(48),
-                          ),
-                          onPressed: () {
-                            Navigator.of(context).pushReplacementNamed(
-                              '/checkin',
-                              arguments: controller.informationForm.value,
-                            );
-                          },
-                          child: const Text('ATENDER '),
-                        ),
+                      CheckinImageLink(
+                          label: 'Carteirinha', image: healthInsuranceCard),
+                      Column(
+                        children: [
+                          for (final (index, medicalOrder)
+                              in medicalOrder.indexed)
+                            CheckinImageLink(
+                              label: 'Pedido Médico #${index + 1}',
+                              image: medicalOrder,
+                            ),
+                        ],
                       ),
                     ],
-                  )
+                  ),
+                  const SizedBox(height: 48),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        controller.endProcess();
+                      },
+                      child: const Text('FINALIZAR ATENDIMENTO'),
+                    ),
+                  ),
                 ],
               ),
             ),
