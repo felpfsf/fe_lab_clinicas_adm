@@ -16,14 +16,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with MessageViewMixin {
   final controller = Injector.get<HomeController>();
   final formKey = GlobalKey<FormState>();
-  final deskNumberEC = TextEditingController();
+  final deskNumberEC = TextEditingController(text: '3');
 
   @override
   void initState() {
     messageListener(controller);
     effect(() {
       if (controller.informationForm != null) {
-        print('Paciente carregado ${controller.informationForm}');
+        debugPrint('Paciente carregado ${controller.informationForm}');
+        Navigator.of(context).pushReplacementNamed('/pre-checkin', arguments: controller.informationForm);
       }
     });
     super.initState();

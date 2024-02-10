@@ -15,14 +15,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> with MessageViewMixin {
   final controller = Injector.get<LoginController>();
   final formKey = GlobalKey<FormState>();
-  final emailEC = TextEditingController();
-  final passwordEC = TextEditingController();
+  final emailEC = TextEditingController(text: 'at1@labclinicas.com');
+  final passwordEC = TextEditingController(text: '123123');
   @override
   void initState() {
     messageListener(controller);
     effect(() {
       if (controller.logged) {
-        print('Usuário logado');
         Navigator.of(context).pushReplacementNamed('/home');
       }
     });
